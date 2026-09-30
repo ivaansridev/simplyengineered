@@ -1,0 +1,138 @@
+// Docs data for spe.* components.
+//
+// `attributes` only lists component-specific props. Native HTML attributes
+// (`id`, `class`, `style`, `aria-*`, `href`, `placeholder`, `disabled`, ...)
+// are inherited from `base`, so they are not repeated here.
+//
+// `base` describes the underlying HTML element(s). It accepts either a string
+// (`"button"`) or an array (`["<button>", "<span>"]`), with or without angle
+// brackets.
+
+[
+  {
+    "component": "Pilltab",
+    "name": "Pill tabs",
+    "tag": "<spe.Pilltab>",
+    "blurb": "A pill-shaped tab group. Put PilltabItem children inside it.",
+    "code": "<spe.Pilltab>\n  <spe.PilltabItem href=\"/\" variant=\"active\">Home</spe.PilltabItem>\n  <spe.PilltabItem href=\"/docs\">Docs</spe.PilltabItem>\n</spe.Pilltab>",
+    "attributes": {},
+    "base": ["<div>"]
+  },
+  {
+    "component": "PilltabItem",
+    "name": "Pill tab item",
+    "tag": "<spe.PilltabItem>",
+    "blurb": "One tab. Give it an href to navigate, or use it as a plain button.",
+    "code": "<spe.PilltabItem href=\"/docs\" variant=\"active\">Docs</spe.PilltabItem>",
+    "attributes": {
+      "variant": ["active", "undefined"]
+    },
+    "base": ["<button>", "<a>"]
+  },
+  {
+    "component": "Button",
+    "name": "Button",
+    "tag": "<spe.Button>",
+    "blurb": "The main action element, in four visual weights.",
+    "code": "<spe.Button variant=\"solid\">Click me</spe.Button>",
+    "attributes": {
+      "variant": ["solid", "tonal", "outlined", "simple"]
+    },
+    "base": ["<button>"]
+  },
+  {
+    "component": "A",
+    "name": "Link",
+    "tag": "<spe.A>",
+    "blurb": "An anchor that can also look like a button.",
+    "code": "<spe.A href=\"#\" variant=\"accent-link\">Link text</spe.A>",
+    "attributes": {
+      "variant": ["link", "accent-link", "btn-solid", "btn-tonal", "btn-outlined", "btn-simple"]
+    },
+    "base": ["<a>"]
+  },
+  {
+    "component": "Card",
+    "name": "Card",
+    "tag": "<spe.Card>",
+    "blurb": "A surface for grouping content. Combine variants with spaces.",
+    "code": "<spe.Card variant=\"accent dashed-border\">\n  <h3>Card title</h3>\n  <p>Anything you want inside.</p>\n</spe.Card>",
+    "attributes": {
+      "variant": [
+        "simple",
+        "accent",
+        "no-border",
+        "no-bg-tint",
+        "dashed-border",
+        "accent dashed-border"
+      ]
+    },
+    "base": ["<div>"]
+  },
+  {
+    "component": "Input",
+    "name": "Input",
+    "tag": "<spe.Input>",
+    "blurb": "Single-line text field. Two-way bind with bind:value.",
+    "code": "<spe.Input placeholder=\"Type something\" bind:value={name} />",
+    "attributes": {
+      "simple": ["boolean"]
+    },
+    "base": ["<input>"]
+  },
+  {
+    "component": "Textarea",
+    "name": "Textarea",
+    "tag": "<spe.Textarea>",
+    "blurb": "Multi-line text field. Two-way bind with bind:value.",
+    "code": "<spe.Textarea placeholder=\"Longer text\" bind:value={bio} />",
+    "attributes": {
+      "simple": ["boolean"]
+    },
+    "base": "textarea"
+  },
+  {
+    "component": "Dropdown",
+    "name": "Dropdown",
+    "tag": "<spe.Dropdown>",
+    "blurb": "Native select styled to match the rest of the library.",
+    "code": "<spe.Dropdown bind:value={selected}>\n  <option value=\"a\">Option A</option>\n</spe.Dropdown>",
+    "attributes": {
+      "simple": ["boolean"]
+    },
+    "base": ["<select>"]
+  },
+  {
+    "component": "Toggle",
+    "name": "Toggle",
+    "tag": "<spe.Toggle>",
+    "blurb": "An on/off switch. Two-way bind with bind:checked.",
+    "code": "<spe.Toggle bind:checked={isOn} />",
+    "attributes": {},
+    "base": ["<input>"]
+  },
+  {
+    "component": "Tooltip",
+    "name": "Tooltip",
+    "tag": "<spe.Tooltip>",
+    "blurb": "Wraps any content and shows a hint on hover or focus.",
+    "code": "<spe.Tooltip content=\"Hello!\" position=\"top\">\n  <spe.Button variant=\"solid\">Hover me</spe.Button>\n</spe.Tooltip>",
+    "attributes": {
+      "content": ["string"],
+      "position": ["top", "bottom", "left", "right"]
+    },
+    "base": ["<span>"]
+  },
+  {
+    "component": "Modal",
+    "name": "Modal",
+    "tag": "<spe.Modal>",
+    "blurb": "A dialog with optional heading and footer snippets.",
+    "code": "<spe.Modal bind:open={modalOpen}>\n  {#snippet heading()}<h3>Title</h3>{/snippet}\n  <p>Body</p>\n  {#snippet footer()}<spe.Button onclick={...}>Close</spe.Button>{/snippet}\n</spe.Modal>",
+    "attributes": {
+      "open": ["boolean"],
+      "variant": ["default", "fullscreen"]
+    },
+    "base": ["<div>"]
+  }
+]

@@ -34,6 +34,14 @@ export default defineConfig(
     }
   },
   {
+    // library components render plain hrefs on purpose: importing $app/paths would tie
+    // them to one SvelteKit base path and break consumers who use another
+    files: ['src/lib/**/*.svelte'],
+    rules: {
+      'svelte/no-navigation-without-resolve': 'off'
+    }
+  },
+  {
     // Override or add rule settings here, such as:
     // 'svelte/button-has-type': 'error'
     rules: {}

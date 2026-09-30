@@ -1,9 +1,21 @@
 <!-- SimplyEngineered — A.svelte -->
 <script lang="ts">
+  import type { HTMLAnchorAttributes } from 'svelte/elements';
+  import type { Snippet } from 'svelte';
+
+  interface Props extends HTMLAnchorAttributes {
+    variant?: 'link' | 'accent-link' | 'btn-solid' | 'btn-tonal' | 'btn-outlined' | 'btn-simple';
+    children?: Snippet;
+  }
+
   let { variant = 'link', class: className = '', children, ...rest }: Props = $props();
 
   let btnClass = $derived(
-    variant.startsWith('button-') ? `spe-btn spe-btn-${variant.replace('button-', '')}` : 'spe-hl'
+    variant.startsWith('btn-')
+      ? `spe-btn spe-btn-${variant.replace('btn-', '')}`
+      : variant === 'accent-link'
+        ? 'spe-hl spe-hl-accent'
+        : 'spe-hl'
   );
 </script>
 
@@ -36,6 +48,15 @@
     color: var(--spe-accent);
     background-image: none;
     border-bottom-color: var(--spe-accent);
+  }
+
+  .spe-hl-accent {
+    color: var(--spe-accent);
+  }
+
+  .spe-hl-accent:hover {
+    color: var(--spe-accent);
+    filter: brightness(1.15);
   }
 
   :global(.spe-btn) {

@@ -6,6 +6,7 @@ export { default as Modal } from './Modal.svelte';
 export { default as Content } from './Content.svelte';
 export { default as Navbar } from './Navbar.svelte';
 export { default as A } from './A.svelte';
+export { default as Card } from './Card.svelte';
 export { default as Pilltab } from './Pilltab.svelte';
 export { default as PilltabItem } from './PilltabItem.svelte';
 export { default as Input } from './Input.svelte';

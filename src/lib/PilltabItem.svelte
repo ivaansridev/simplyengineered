@@ -1,19 +1,31 @@
 <!-- SimplyEngineered — PilltabItem.svelte -->
 <script lang="ts">
-  import type { HTMLButtonAttributes } from 'svelte/elements';
+  import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
   import type { Snippet } from 'svelte';
 
-  interface Props extends HTMLButtonAttributes {
+  type Props = {
     variant?: 'active' | undefined;
+    href?: string;
     children?: Snippet;
-  }
+  } & Omit<HTMLButtonAttributes, 'href'> &
+    Omit<HTMLAnchorAttributes, 'href'>;
 
-  let { variant, class: className = '', children, ...rest }: Props = $props();
+  let { variant, href, class: className = '', children, ...rest }: Props = $props();
+
+  let classes = $derived(
+    `spe-pilltab-item${variant === 'active' ? ' active' : ''}${className ? ` ${className}` : ''}`
+  );
 </script>
 
-<button class="spe-pilltab-item {variant === 'active' ? 'active' : ''} {className}" {...rest}>
-  {@render children?.()}
-</button>
+{#if href}
+  <a {href} class={classes} {...rest as HTMLAnchorAttributes}>
+    {@render children?.()}
+  </a>
+{:else}
+  <button class={classes} {...rest}>
+    {@render children?.()}
+  </button>
+{/if}
 
 <style>
   .spe-pilltab-item {
@@ -29,6 +41,7 @@
     border: none;
     border-radius: var(--spe-radius-med);
     cursor: pointer;
+    text-decoration: none;
     transition:
       background-color 150ms ease,
       color 150ms ease;

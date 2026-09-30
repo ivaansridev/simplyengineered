@@ -5,7 +5,7 @@ A Svelte 5 component library.
 ## Installation
 
 ```bash
-npm install github:ivaansridev/simplyengineered
+npm i simplyengineered
 ```
 
 ## Usage
