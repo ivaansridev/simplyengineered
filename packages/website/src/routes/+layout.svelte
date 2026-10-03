@@ -1,5 +1,5 @@
 <script lang="ts">
-  import '$lib/colors.css';
+  import 'simplyengineered/colors.css';
   let { children } = $props();
 </script>
 

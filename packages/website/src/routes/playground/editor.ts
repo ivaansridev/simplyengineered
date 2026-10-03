@@ -9,7 +9,7 @@ import {
 import { oneDark } from '@codemirror/theme-one-dark';
 import { svelte } from '@replit/codemirror-lang-svelte';
 
-import * as spe from '$lib';
+import * as spe from 'simplyengineered';
 import docsRaw from '$lib/docs-data.jsonc?raw';
 
 interface ComponentDoc {
@@ -23,7 +23,7 @@ interface ComponentDoc {
 
 const docs: ComponentDoc[] = JSON.parse(docsRaw.replace(/\/\/.*$/gm, ''));
 
-const LIB_IMPORT = `import * as spe from '$lib';`;
+const LIB_IMPORT = `import * as spe from 'simplyengineered';`;
 
 /** what gets inserted when a component is picked from the completion list */
 const SNIPPETS: Record<string, string> = {
@@ -61,7 +61,7 @@ function summarise(doc: ComponentDoc): string {
   return parts.join('  ·  ');
 }
 
-/** add `import * as spe from '$lib'` if the code doesn't already have it */
+/** add `import * as spe from 'simplyengineered'` if the code doesn't already have it */
 function ensureLibImport(view: EditorView): void {
   const source = view.state.doc.toString();
   if (source.includes(LIB_IMPORT)) return;

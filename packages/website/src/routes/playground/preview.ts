@@ -6,7 +6,7 @@ import * as clientRuntime from 'svelte/internal/client';
 // the compiler's own output targets these, so the playground has to link against them
 // eslint-disable-next-line svelte/no-svelte-internal
 import 'svelte/internal/disclose-version';
-import * as lib from '$lib';
+import * as lib from 'simplyengineered';
 
 /**
  * The playground compiles user code in the browser. The compiler emits real ESM
@@ -19,7 +19,7 @@ import * as lib from '$lib';
  * and `position: fixed` inside a component is scoped to the preview pane.
  */
 const SPECIFIERS: Record<string, string> = {
-  $lib: '__lib',
+  simplyengineered: '__lib',
   svelte: '__svelte',
   'svelte/internal/client': '__client'
 };
@@ -58,7 +58,7 @@ function link(js: string): string {
   if (unresolved.size) {
     const list = [...unresolved].map((s) => `'${s}'`).join(', ');
     throw new Error(
-      `The playground can only import $lib, svelte and svelte/internal/client — not ${list}.`
+      `The playground can only import simplyengineered, svelte and svelte/internal/client — not ${list}.`
     );
   }
 

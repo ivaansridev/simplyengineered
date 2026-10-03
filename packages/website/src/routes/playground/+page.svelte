@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as spe from '$lib';
+  import * as spe from 'simplyengineered';
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import { createEditor } from './editor';

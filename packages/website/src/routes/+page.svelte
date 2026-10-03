@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as spe from '$lib';
+  import * as spe from 'simplyengineered';
   import docsRaw from '$lib/docs-data.jsonc?raw';
   import { page } from '$app/state';
 

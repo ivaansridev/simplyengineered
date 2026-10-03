@@ -9,7 +9,7 @@ export const EXAMPLES: PlaygroundExample[] = [
     id: 'card',
     name: 'Card + button',
     code: `<script>
-  import * as spe from '$lib';
+  import * as spe from 'simplyengineered';
 
   let clicks = $state(0);
 </script>
@@ -45,7 +45,7 @@ export const EXAMPLES: PlaygroundExample[] = [
     id: 'form',
     name: 'Form controls',
     code: `<script>
-  import * as spe from '$lib';
+  import * as spe from 'simplyengineered';
 
   let name = $state('');
   let bio = $state('');
@@ -107,7 +107,7 @@ export const EXAMPLES: PlaygroundExample[] = [
     id: 'overlay',
     name: 'Modal + tooltip',
     code: `<script>
-  import * as spe from '$lib';
+  import * as spe from 'simplyengineered';
 
   let open = $state(false);
 </script>
@@ -146,7 +146,7 @@ export const EXAMPLES: PlaygroundExample[] = [
     id: 'elevation',
     name: 'Card elevation',
     code: `<script>
-  import * as spe from '$lib';
+  import * as spe from 'simplyengineered';
 </script>
 
 <!-- spe.Card ships no transform, no shadow and no hover rule, in any variant.

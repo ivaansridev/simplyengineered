@@ -24,6 +24,23 @@ export default defineConfig(
     }
   },
   {
+    // the library is published standalone, so it must never reach into the website
+    files: ['packages/simplyengineered/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/website/**', '$app/*', '$env/*'],
+              message: 'The library package must stay independent of the website and SvelteKit.'
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
     files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
     languageOptions: {
       parserOptions: {
@@ -36,7 +53,7 @@ export default defineConfig(
   {
     // library components render plain hrefs on purpose: importing $app/paths would tie
     // them to one SvelteKit base path and break consumers who use another
-    files: ['src/lib/**/*.svelte'],
+    files: ['packages/simplyengineered/src/lib/**/*.svelte'],
     rules: {
       'svelte/no-navigation-without-resolve': 'off'
     }
