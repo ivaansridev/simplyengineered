@@ -1,32 +1,8 @@
 <script lang="ts">
   import * as spe from 'simplyengineered';
-  import docsRaw from '$lib/docs-data.jsonc?raw';
-  import { page } from '$app/state';
+  import { baseTags, docs, isActive, tabs } from '$lib/docs';
 
-  interface ComponentDoc {
-    component: string;
-    name: string;
-    tag: string;
-    blurb: string;
-    base?: string | string[];
-  }
-
-  // strip // comments before parsing since JSON.parse doesn't support JSONC natively
-  const docs: ComponentDoc[] = JSON.parse(docsRaw.replace(/\/\/.*$/gm, ''));
-
-  const tabs = [
-    { label: 'Home', href: '/' },
-    { label: 'Docs', href: '/docs' },
-    { label: 'Playground', href: '/playground' }
-  ];
-
-  function isActive(href: string): boolean {
-    return href === '/' ? page.url.pathname === '/' : page.url.pathname.startsWith(href);
-  }
-
-  let tagName = $derived(
-    (Array.isArray(docs[0].base) ? docs[0].base : [docs[0].base])[0]?.replace(/^<|>$/g, '') ?? ''
-  );
+  let tagName = $derived(baseTags(docs[0].base)[0] ?? '');
 
   let selected = $state('Option A');
   let query = $state('');
@@ -39,13 +15,25 @@
   <h1>SimplyEngineered</h1>
 
   {#snippet right()}
-    <spe.Pilltab>
-      {#each tabs as tab (tab.href)}
-        <spe.PilltabItem href={tab.href} variant={isActive(tab.href) ? 'active' : undefined}>
-          {tab.label}
-        </spe.PilltabItem>
-      {/each}
-    </spe.Pilltab>
+    <spe.StackMenu threshold="tablet" label="Menu">
+      <spe.Pilltab>
+        {#each tabs as tab (tab.href)}
+          <spe.PilltabItem href={tab.href} variant={isActive(tab.href) ? 'active' : undefined}>
+            {tab.label}
+          </spe.PilltabItem>
+        {/each}
+      </spe.Pilltab>
+      <spe.Tooltip content="Pick a theme color — saved for next time">
+        <spe.ColorSwitcher active="yellow" aria-label="Theme color">
+          <option value="yellow">Yellow</option>
+          <option value="magenta">Magenta</option>
+          <option value="blue">Blue</option>
+          <option value="pink">Pink</option>
+          <option value="green">Green</option>
+          <option value="beige">Beige</option>
+        </spe.ColorSwitcher>
+      </spe.Tooltip>
+    </spe.StackMenu>
   {/snippet}
 </spe.Navbar>
 
@@ -58,12 +46,16 @@
       attributes like <code>id</code>, <code>class</code> and <code>aria-*</code> pass straight through.
     </p>
 
-    <div class="install">
-      <code>npm i simplyengineered</code>
-    </div>
+    <spe.Tooltip content="Install it from npm">
+      <div class="install">
+        <code>npm i simplyengineered</code>
+      </div>
+    </spe.Tooltip>
 
     <div class="cta">
-      <spe.A href="/docs" variant="btn-solid">Read the docs</spe.A>
+      <spe.Tooltip content="Browse every component">
+        <spe.A href="/docs" variant="btn-solid">Read the docs</spe.A>
+      </spe.Tooltip>
     </div>
   </section>
 
@@ -72,23 +64,42 @@
     <p class="hint">No screenshots — these are the real components.</p>
 
     <div class="row">
-      <span class="label">Button</span>
-      <spe.Button variant="solid">Solid</spe.Button>
-      <spe.Button variant="tonal">Tonal</spe.Button>
-      <spe.Button variant="outlined">Outlined</spe.Button>
-      <spe.Button variant="simple">Simple</spe.Button>
-      <spe.Button disabled>Disabled</spe.Button>
+      <span class="label"><spe.Tooltip content="Four visual weights">Button</spe.Tooltip></span>
+      <spe.Tooltip content="Filled with the current accent color">
+        <spe.Button variant="solid">Solid</spe.Button>
+      </spe.Tooltip>
+      <spe.Tooltip content="Tinted accent background">
+        <spe.Button variant="tonal">Tonal</spe.Button>
+      </spe.Tooltip>
+      <spe.Tooltip content="Accent border, transparent fill">
+        <spe.Button variant="outlined">Outlined</spe.Button>
+      </spe.Tooltip>
+      <spe.Tooltip content="No chrome until you hover it">
+        <spe.Button variant="simple">Simple</spe.Button>
+      </spe.Tooltip>
+      <spe.Tooltip content="Disabled buttons are inert and unfocusable">
+        <spe.Button disabled>Disabled</spe.Button>
+      </spe.Tooltip>
     </div>
 
     <div class="row">
-      <span class="label">Link</span>
-      <spe.A href="/docs" variant="link">Plain link</spe.A>
-      <spe.A href="/docs" variant="accent-link">Accent link</spe.A>
-      <spe.A href="/docs" variant="btn-tonal">Tonal button link</spe.A>
+      <span class="label"
+        ><spe.Tooltip content="Anchors that can also look like buttons">Link</spe.Tooltip></span
+      >
+      <spe.Tooltip content="Inherits the text color with a dotted underline">
+        <spe.A href="/docs" variant="link">Plain link</spe.A>
+      </spe.Tooltip>
+      <spe.Tooltip content="Uses the accent color">
+        <spe.A href="/docs" variant="accent-link">Accent link</spe.A>
+      </spe.Tooltip>
+      <spe.Tooltip content="An anchor styled like a tonal button">
+        <spe.A href="/docs" variant="btn-tonal">Tonal button link</spe.A>
+      </spe.Tooltip>
     </div>
 
     <div class="row">
-      <span class="label">Pilltab</span>
+      <span class="label"><spe.Tooltip content="A pill-shaped tab group">Pilltab</spe.Tooltip></span
+      >
       <spe.Pilltab>
         <spe.PilltabItem href="/">Home</spe.PilltabItem>
         <spe.PilltabItem href="/docs" variant="active">Docs</spe.PilltabItem>
@@ -96,7 +107,9 @@
     </div>
 
     <div class="row">
-      <span class="label">Card</span>
+      <span class="label"
+        ><spe.Tooltip content="Surfaces for grouping content">Card</spe.Tooltip></span
+      >
       <spe.Card class="demo-card">
         <strong>Default</strong>
         <span>tinted surface with a solid border</span>
@@ -112,17 +125,19 @@
     </div>
 
     <div class="row">
-      <span class="label">Input</span>
+      <span class="label"><spe.Tooltip content="Single-line text field">Input</spe.Tooltip></span>
       <spe.Input placeholder="Type something" bind:value={query} />
     </div>
 
     <div class="row">
-      <span class="label">Textarea</span>
+      <span class="label"><spe.Tooltip content="Multi-line text field">Textarea</spe.Tooltip></span>
       <spe.Textarea placeholder="Longer text" bind:value={notes} />
     </div>
 
     <div class="row">
-      <span class="label">Dropdown</span>
+      <span class="label"
+        ><spe.Tooltip content="Native select styled to match">Dropdown</spe.Tooltip></span
+      >
       <spe.Dropdown bind:value={selected}>
         <option value="Option A">Option A</option>
         <option value="Option B">Option B</option>
@@ -132,21 +147,29 @@
     </div>
 
     <div class="row">
-      <span class="label">Toggle</span>
-      <spe.Toggle bind:checked={enabled} />
+      <span class="label"><spe.Tooltip content="An on/off switch">Toggle</spe.Tooltip></span>
+      <spe.Tooltip content="Click to toggle">
+        <spe.Toggle bind:checked={enabled} />
+      </spe.Tooltip>
       <span class="value">enabled: {enabled}</span>
     </div>
 
     <div class="row">
-      <span class="label">Tooltip</span>
+      <span class="label"
+        ><spe.Tooltip content="These follow your cursor">Tooltip</spe.Tooltip></span
+      >
       <spe.Tooltip content="Tooltips wrap any content" position="top">
         <spe.Button variant="outlined">Hover me</spe.Button>
       </spe.Tooltip>
     </div>
 
     <div class="row">
-      <span class="label">Modal</span>
-      <spe.Button variant="tonal" onclick={() => (open = true)}>Open modal</spe.Button>
+      <span class="label"
+        ><spe.Tooltip content="A real dialog with snippets">Modal</spe.Tooltip></span
+      >
+      <spe.Tooltip content="Opens a real <spe.Modal>">
+        <spe.Button variant="tonal" onclick={() => (open = true)}>Open modal</spe.Button>
+      </spe.Tooltip>
     </div>
   </section>
 
@@ -182,12 +205,12 @@
 
   h3 {
     font-size: 20px;
-    margin: 0 0 4px;
+    margin: 0 0 2px;
   }
 
   .lede {
     max-width: 60ch;
-    margin: 16px 0 0;
+    margin: 8px 0 0;
     color: color-mix(in srgb, var(--spe-font-color) 65%, transparent);
     font-size: 16px;
     line-height: 1.6;
@@ -198,7 +221,7 @@
   }
 
   .install {
-    margin: 24px 0 0;
+    margin: 12px 0 0;
     padding: 12px 16px;
     display: inline-block;
     background: var(--spe-bg-tint);
@@ -211,11 +234,11 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
-    margin-top: 24px;
+    margin-top: 12px;
   }
 
   .showcase {
-    margin-top: 72px;
+    margin-top: 36px;
     padding: 24px;
     background: var(--spe-bg-tint);
     border: 1px solid color-mix(in srgb, var(--spe-font-color) 10%, transparent);
@@ -223,7 +246,7 @@
   }
 
   .hint {
-    margin: 0 0 8px;
+    margin: 0 0 4px;
     color: color-mix(in srgb, var(--spe-font-color) 55%, transparent);
     font-size: 14px;
   }
@@ -251,7 +274,7 @@
 
   .row :global(.demo-card strong) {
     display: block;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
     font-size: 14px;
   }
 
@@ -275,7 +298,7 @@
   }
 
   footer {
-    margin-top: 72px;
+    margin-top: 36px;
     padding-top: 20px;
     border-top: 1px solid color-mix(in srgb, var(--spe-font-color) 10%, transparent);
     color: color-mix(in srgb, var(--spe-font-color) 50%, transparent);

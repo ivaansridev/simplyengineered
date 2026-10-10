@@ -26,9 +26,9 @@
     border-radius: var(--spe-radius-low);
     outline: none;
     transition:
-      border-color 120ms ease,
-      background-color 120ms ease,
-      box-shadow 120ms ease;
+      border-color var(--spe-dur, 120ms) ease,
+      background-color var(--spe-dur, 120ms) ease,
+      box-shadow var(--spe-dur, 120ms) ease;
   }
 
   .spe-input:hover {

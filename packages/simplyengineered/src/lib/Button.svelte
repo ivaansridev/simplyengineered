@@ -11,6 +11,7 @@
   let { variant = 'solid', class: className = '', children, ...rest }: Props = $props();
 </script>
 
+<!-- .spe-btn* styling is global (main.css) so <spe.A variant="btn-*"> reuses it. -->
 <button class="spe-btn spe-btn-{variant} {className}" {...rest}>
   {@render children?.()}
 </button>
@@ -23,15 +24,11 @@
     font: inherit;
     font-size: 16px;
     font-weight: 600;
+    text-decoration: none;
     cursor: pointer;
     border: none;
     border-radius: var(--spe-radius-low);
     padding: 6px 16px;
-    transition:
-      background-color var(--spe-dur, 120ms) ease,
-      filter var(--spe-dur, 120ms) ease,
-      color var(--spe-dur, 120ms) ease,
-      border-color var(--spe-dur, 120ms) ease;
   }
 
   .spe-btn:disabled {
@@ -50,9 +47,11 @@
     color: var(--spe-accent-font-color);
     border: none;
   }
+
   .spe-btn-solid:hover {
     filter: brightness(1.1);
   }
+
   .spe-btn-solid:active {
     filter: brightness(0.95);
   }
@@ -62,9 +61,11 @@
     color: var(--spe-accent);
     border: none;
   }
+
   .spe-btn-tonal:hover {
     background: color-mix(in srgb, var(--spe-accent) 25%, transparent);
   }
+
   .spe-btn-tonal:active {
     filter: brightness(0.95);
   }
@@ -74,9 +75,11 @@
     color: var(--spe-accent);
     border: 1.5px solid var(--spe-accent);
   }
+
   .spe-btn-outlined:hover {
     background: var(--spe-hover-bg, transparent);
   }
+
   .spe-btn-outlined:active {
     filter: brightness(0.95);
   }
@@ -86,9 +89,11 @@
     color: var(--spe-accent);
     border: none;
   }
+
   .spe-btn-simple:hover {
     background: var(--spe-hover-bg, transparent);
   }
+
   .spe-btn-simple:active {
     filter: brightness(0.95);
   }

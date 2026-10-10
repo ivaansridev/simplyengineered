@@ -19,6 +19,7 @@
   );
 </script>
 
+<!-- .spe-btn* styling is shared with <spe.Button> and lives in main.css. -->
 <a class="{btnClass} {className}" {...rest}>
   {@render children?.()}
 </a>
@@ -39,9 +40,9 @@
     background-repeat: repeat-x;
     text-decoration: none;
     transition:
-      color 150ms ease,
-      background-image 150ms ease,
-      border-bottom-color 150ms ease;
+      color var(--spe-dur, 120ms) ease,
+      background-image var(--spe-dur, 120ms) ease,
+      border-bottom-color var(--spe-dur, 120ms) ease;
   }
 
   .spe-hl:hover {
@@ -57,57 +58,5 @@
   .spe-hl-accent:hover {
     color: var(--spe-accent);
     filter: brightness(1.15);
-  }
-
-  :global(.spe-btn) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font: inherit;
-    font-size: 16px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    border-radius: var(--spe-radius-low);
-    padding: 6px 16px;
-    transition:
-      background-color 120ms ease,
-      filter 120ms ease,
-      color 120ms ease,
-      border-color 120ms ease;
-  }
-
-  :global(.spe-btn-solid) {
-    background: var(--spe-accent);
-    color: var(--spe-accent-font-color);
-  }
-  :global(.spe-btn-solid:hover) {
-    filter: brightness(1.1);
-  }
-
-  :global(.spe-btn-tonal) {
-    background: color-mix(in srgb, var(--spe-accent) 15%, transparent);
-    color: var(--spe-accent);
-  }
-  :global(.spe-btn-tonal:hover) {
-    background: color-mix(in srgb, var(--spe-accent) 25%, transparent);
-  }
-
-  :global(.spe-btn-outlined) {
-    background: transparent;
-    color: var(--spe-accent);
-    border: 1.5px solid var(--spe-accent);
-  }
-  :global(.spe-btn-outlined:hover) {
-    background: color-mix(in srgb, var(--spe-accent) 10%, transparent);
-  }
-
-  :global(.spe-btn-simple) {
-    background: transparent;
-    color: var(--spe-accent);
-  }
-  :global(.spe-btn-simple:hover) {
-    background: color-mix(in srgb, var(--spe-accent) 10%, transparent);
   }
 </style>

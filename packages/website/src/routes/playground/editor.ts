@@ -10,18 +10,7 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import { svelte } from '@replit/codemirror-lang-svelte';
 
 import * as spe from 'simplyengineered';
-import docsRaw from '$lib/docs-data.jsonc?raw';
-
-interface ComponentDoc {
-  component: string;
-  name: string;
-  tag: string;
-  blurb: string;
-  attributes?: Record<string, string[]>;
-  base?: string | string[];
-}
-
-const docs: ComponentDoc[] = JSON.parse(docsRaw.replace(/\/\/.*$/gm, ''));
+import { baseTags, docs, type ComponentDoc } from '$lib/docs';
 
 const LIB_IMPORT = `import * as spe from 'simplyengineered';`;
 
@@ -30,6 +19,9 @@ const SNIPPETS: Record<string, string> = {
   A: '<spe.A href="/" variant="link">Link text</spe.A>',
   Button: '<spe.Button variant="solid">Click me</spe.Button>',
   Card: '<spe.Card>\n  <p>Card content</p>\n</spe.Card>',
+  ColorSwitcher:
+    '<spe.ColorSwitcher active="yellow" aria-label="Theme color">\n  <option value="yellow">Yellow</option>\n  <option value="magenta">Magenta</option>\n</spe.ColorSwitcher>',
+  Content: '<spe.Content>\n  <p>Content</p>\n</spe.Content>',
   Dropdown:
     '<spe.Dropdown>\n  <option value="a">Option A</option>\n  <option value="b">Option B</option>\n</spe.Dropdown>',
   Input: '<spe.Input placeholder="Type something" />',
@@ -37,24 +29,17 @@ const SNIPPETS: Record<string, string> = {
   Pilltab:
     '<spe.Pilltab>\n  <spe.PilltabItem href="/">Home</spe.PilltabItem>\n  <spe.PilltabItem href="/docs" variant="active">Docs</spe.PilltabItem>\n</spe.Pilltab>',
   PilltabItem: '<spe.PilltabItem href="/docs" variant="active">Docs</spe.PilltabItem>',
+  StackMenu:
+    '<spe.StackMenu threshold="tablet" label="Menu">\n  <spe.Pilltab>\n    <spe.PilltabItem href="/">Home</spe.PilltabItem>\n  </spe.Pilltab>\n</spe.StackMenu>',
   Textarea: '<spe.Textarea placeholder="Longer text" />',
   Toggle: '<spe.Toggle bind:checked={isOn} />',
   Tooltip:
     '<spe.Tooltip content="Hello!" position="top">\n  <spe.Button>Hover me</spe.Button>\n</spe.Tooltip>'
 };
 
-function toTagNames(base?: string | string[]): string[] {
-  if (!base) return [];
-  const list = Array.isArray(base) ? base : [base];
-  return list
-    .filter((entry): entry is string => typeof entry === 'string')
-    .map((entry) => entry.trim().replace(/^<|>$/g, ''))
-    .filter(Boolean);
-}
-
 function summarise(doc: ComponentDoc): string {
   const parts: string[] = [];
-  const base = toTagNames(doc.base);
+  const base = baseTags(doc.base);
   if (base.length) parts.push(`<${base.join('>, <')}>`);
   const values = Object.values(doc.attributes ?? {}).flat();
   if (values.length) parts.push(values.slice(0, 5).join(', '));

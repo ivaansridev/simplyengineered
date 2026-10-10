@@ -1,20 +1,29 @@
-import adapter from '@sveltejs/adapter-auto';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+// The library is a workspace dependency consumed from its built `dist`, so edits
+// to its source don't reach the browser until it is rebuilt. The website's dev
+// script keeps `svelte-package --watch` running alongside Vite; this plugin makes
+// Vite watch the rebuilt output and reload the page when it changes.
+const libDist = path.resolve(
+  fileURLToPath(new URL('.', import.meta.url)),
+  '../simplyengineered/dist'
+);
+
+function watchLibraryDist(): Plugin {
+  return {
+    name: 'spe-watch-library',
+    configureServer(server) {
+      server.watcher.add(libDist);
+      server.watcher.on('change', (file) => {
+        if (file.startsWith(libDist)) server.ws.send({ type: 'full-reload' });
+      });
+    }
+  };
+}
 
 export default defineConfig({
-  plugins: [
-    sveltekit({
-      compilerOptions: {
-        // Force runes mode for the project, except for libraries. Can be removed in svelte 6.
-        runes: ({ filename }) =>
-          filename.split(/[/\\]/).includes('node_modules') ? undefined : true
-      },
-
-      // adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-      // If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-      // See https://svelte.dev/docs/kit/adapters for more information about adapters.
-      adapter: adapter()
-    })
-  ]
+  plugins: [sveltekit(), watchLibraryDist()]
 });

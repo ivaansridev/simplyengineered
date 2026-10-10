@@ -1,0 +1,68 @@
+/*
+ * SimplyEngineered design tokens — vars.css
+ * MIT License — see the LICENSE file at the repository root.
+ *
+ * Every token is a plain custom property on :root, so you can retheme the whole
+ * library from your own stylesheet. Create your own file and link/import it
+ * AFTER this one:
+ *
+ *   :root {
+ *     --spe-accent: #ec4899;
+ *     --spe-bg: #0b0b0d;
+ *   }
+ *
+ * Same selector (:root) + later source order wins, so no !important is needed.
+ * Note: <spe.ColorSwitcher> writes --spe-accent inline on <html> while in use,
+ * which outranks stylesheet values — skip it for pure CSS theming.
+ *
+ * Light theme: override --spe-mode and --spe-font-color together (they feed
+ * color-mix in Pilltab/PilltabItem), e.g.
+ *
+ *   :root {
+ *     --spe-mode: white;
+ *     --spe-font-color: #161512;
+ *     --spe-bg: #ffffff;
+ *     --spe-bg-tint: #f2f2f2;
+ *     --spe-color-scheme: light;
+ *   }
+ */
+:root {
+  /*
+   * Accent palette. Pick one with <spe.ColorSwitcher> or set --spe-accent
+   * directly. --spe-color-red is not a ColorSwitcher option but is available for
+   * status/error UI.
+   */
+  --spe-color-blue: #3b82f6;
+  --spe-color-red: #ef4444;
+  --spe-color-magenta: #d946ef;
+  --spe-color-yellow: #e0b040;
+  --spe-color-green: #22c55e;
+  --spe-color-pink: #ec4899;
+  --spe-color-beige: #e7dcc3;
+
+  --spe-mode: black;
+  --spe-font-color: white;
+  /*
+   * Text/icon color drawn on top of --spe-accent. Static on purpose (see
+   * ColorSwitcher): it stays white by default. Light accents (--spe-color-beige,
+   * --spe-color-pink) therefore have low contrast — override this token together
+   * with --spe-accent for those themes.
+   */
+  --spe-accent-font-color: white;
+  /* native control chrome (select popup, scrollbars, checkbox) — override for a light theme */
+  --spe-color-scheme: dark;
+
+  --spe-bg: #161512;
+  --spe-bg-tint: #1e1e1e;
+  --spe-accent: var(--spe-color-yellow);
+  --spe-hover-bg: color-mix(in srgb, var(--spe-accent) 10%, transparent);
+
+  --spe-radius-low: 0px;
+  --spe-radius-med: 0px;
+  --spe-radius-high: 0px;
+
+  --spe-dur: 120ms;
+  --spe-input-height: 40px;
+  --spe-card-padding: 20px;
+  --spe-modal-overlay: rgb(0 0 0 / 55%);
+}

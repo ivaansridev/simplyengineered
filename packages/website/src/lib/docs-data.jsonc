@@ -41,6 +41,15 @@
     "base": ["<button>"]
   },
   {
+    "component": "Content",
+    "name": "Content",
+    "tag": "<spe.Content>",
+    "blurb": "Constrains and centres a page's content with consistent padding.",
+    "code": "<spe.Content>\n  <h1>Page title</h1>\n  <p>Everything in here is centred and width-limited.</p>\n</spe.Content>",
+    "attributes": {},
+    "base": ["<div>"]
+  },
+  {
     "component": "A",
     "name": "Link",
     "tag": "<spe.A>",
@@ -103,6 +112,17 @@
     "base": ["<select>"]
   },
   {
+    "component": "ColorSwitcher",
+    "name": "Color switcher",
+    "tag": "<spe.ColorSwitcher>",
+    "blurb": "A Dropdown that repaints --spe-accent. The choice is saved to localStorage and restored before first paint, so it survives reloads without a flash.",
+    "code": "<spe.ColorSwitcher active=\"yellow\" aria-label=\"Theme color\">\n  <option value=\"yellow\">Yellow</option>\n  <option value=\"magenta\">Magenta</option>\n  <option value=\"pink\">Pink</option>\n</spe.ColorSwitcher>",
+    "attributes": {
+      "active": ["string"]
+    },
+    "base": ["<spe.Dropdown>"]
+  },
+  {
     "component": "Toggle",
     "name": "Toggle",
     "tag": "<spe.Toggle>",
@@ -115,23 +135,37 @@
     "component": "Tooltip",
     "name": "Tooltip",
     "tag": "<spe.Tooltip>",
-    "blurb": "Wraps any content and shows a hint on hover or focus.",
-    "code": "<spe.Tooltip content=\"Hello!\" position=\"top\">\n  <spe.Button variant=\"solid\">Hover me</spe.Button>\n</spe.Tooltip>",
+    "blurb": "Wraps any content and shows a hint that follows the cursor, flipping near screen edges. Shows instantly, no animation.",
+    "code": "<spe.Tooltip content=\"Hello!\">\n  <spe.Button variant=\"solid\">Hover me</spe.Button>\n</spe.Tooltip>",
     "attributes": {
       "content": ["string"],
-      "position": ["top", "bottom", "left", "right"]
+      "position": ["auto", "top", "bottom", "left", "right"]
     },
     "base": ["<span>"]
+  },
+  {
+    "component": "StackMenu",
+    "name": "Stack menu",
+    "tag": "<spe.StackMenu>",
+    "blurb": "Shows its children inline and, below the threshold, collapses them into a hamburger button that opens a scrollable sheet from any edge.",
+    "code": "<spe.StackMenu threshold=\"tablet\" side=\"left\" label=\"Menu\">\n  <spe.Pilltab>\n    <spe.PilltabItem href=\"/\">Home</spe.PilltabItem>\n  </spe.Pilltab>\n</spe.StackMenu>",
+    "attributes": {
+      "threshold": ["phone", "tablet"],
+      "side": ["left", "center", "right", "bottom", "top"],
+      "label": ["string"]
+    },
+    "base": ["<div>", "<button>", "<spe.Modal>"]
   },
   {
     "component": "Modal",
     "name": "Modal",
     "tag": "<spe.Modal>",
-    "blurb": "A dialog with optional heading and footer snippets.",
+    "blurb": "A dialog with optional heading and footer snippets; `side` turns it into a sheet that slides in from an edge.",
     "code": "<spe.Modal bind:open={modalOpen}>\n  {#snippet heading()}<h3>Title</h3>{/snippet}\n  <p>Body</p>\n  {#snippet footer()}<spe.Button onclick={...}>Close</spe.Button>{/snippet}\n</spe.Modal>",
     "attributes": {
       "open": ["boolean"],
-      "variant": ["default", "fullscreen"]
+      "variant": ["default", "fullscreen"],
+      "side": ["center", "left", "right", "top", "bottom"]
     },
     "base": ["<div>"]
   }

@@ -1,37 +1,35 @@
 <script lang="ts">
   import * as spe from 'simplyengineered';
-  import docsRaw from '$lib/docs-data.jsonc?raw';
   import { page } from '$app/state';
-
-  interface ComponentDoc {
-    component: string;
-    name: string;
-    tag: string;
-    blurb: string;
-    code: string;
-    attributes: Record<string, string[]>;
-    /** underlying element(s) — a single name or a list, with or without <angle> brackets */
-    base?: string | string[];
-  }
-
-  // strip // comments before parsing since JSON.parse doesn't support JSONC natively
-  const docs: ComponentDoc[] = JSON.parse(docsRaw.replace(/\/\/.*$/gm, ''));
-
-  const tabs = [
-    { label: 'Home', href: '/' },
-    { label: 'Docs', href: '/docs' },
-    { label: 'Playground', href: '/playground' }
-  ];
-
-  function isActive(href: string): boolean {
-    return href === '/' ? page.url.pathname === '/' : page.url.pathname.startsWith(href);
-  }
+  import { baseTags, docs, isActive, tabs, type ComponentDoc } from '$lib/docs';
 
   let search = $state('');
+
   // /docs?c=Button deep-links straight to a component
+  let unknown = $state<string | null>(
+    page.url.searchParams.get('c') &&
+      !docs.some((d) => d.component === page.url.searchParams.get('c'))
+      ? page.url.searchParams.get('c')
+      : null
+  );
   let selected = $state<ComponentDoc>(
     docs.find((d) => d.component === page.url.searchParams.get('c')) ?? docs[0]
   );
+
+  // In-app navigation to /docs?c=X must switch components too, not just the
+  // initial load. Clicks update `selected` directly (without touching the URL),
+  // so this only fires when the query string actually changes. An unknown value
+  // keeps the current component but surfaces a notice.
+  $effect(() => {
+    const requested = page.url.searchParams.get('c');
+    if (!requested) {
+      unknown = null;
+      return;
+    }
+    const match = docs.find((d) => d.component === requested);
+    unknown = match ? null : requested;
+    if (match && match.component !== selected.component) selected = match;
+  });
 
   let filtered = $derived(
     docs.filter(
@@ -42,62 +40,77 @@
     )
   );
 
-  // base can be "button" or ["<button>"] — normalise to a list of bare tag names
-  function toTagNames(base?: string | string[]): string[] {
-    if (!base) return [];
-    const list = Array.isArray(base) ? base : [base];
-    return list
-      .filter((entry): entry is string => typeof entry === 'string')
-      .map((entry) => entry.trim().replace(/^<|>$/g, ''))
-      .filter(Boolean);
-  }
-
-  let bases = $derived(toTagNames(selected.base));
-  let entries = $derived(Object.entries(selected.attributes ?? {}));
+  let bases = $derived(baseTags(selected.base));
+  let entries = $derived(Object.entries(selected.attributes));
 </script>
 
 <spe.Navbar blur>
   <h2>SimplyEngineered</h2>
 
   {#snippet right()}
-    <spe.Pilltab>
-      {#each tabs as tab (tab.href)}
-        <spe.PilltabItem href={tab.href} variant={isActive(tab.href) ? 'active' : undefined}>
-          {tab.label}
-        </spe.PilltabItem>
-      {/each}
-    </spe.Pilltab>
+    <spe.StackMenu threshold="tablet" label="Menu">
+      <spe.Pilltab>
+        {#each tabs as tab (tab.href)}
+          <spe.PilltabItem href={tab.href} variant={isActive(tab.href) ? 'active' : undefined}>
+            {tab.label}
+          </spe.PilltabItem>
+        {/each}
+      </spe.Pilltab>
+      <spe.Tooltip content="Pick a theme color — saved for next time">
+        <spe.ColorSwitcher active="yellow" aria-label="Theme color">
+          <option value="yellow">Yellow</option>
+          <option value="magenta">Magenta</option>
+          <option value="blue">Blue</option>
+          <option value="pink">Pink</option>
+          <option value="green">Green</option>
+          <option value="beige">Beige</option>
+        </spe.ColorSwitcher>
+      </spe.Tooltip>
+    </spe.StackMenu>
   {/snippet}
 </spe.Navbar>
 
 <div class="docs-layout">
   <aside class="sidebar">
-    <spe.Input placeholder="Search components..." bind:value={search} />
-    <ul class="component-list">
-      {#each filtered as doc (doc.component)}
-        <li>
-          <button
-            class="component-link"
-            class:active={selected.component === doc.component}
-            onclick={() => (selected = doc)}
-          >
-            {doc.name}
-          </button>
-        </li>
-      {/each}
-    </ul>
+    <spe.StackMenu side="left" threshold="tablet" label="Components">
+      <spe.Input placeholder="Search components..." bind:value={search} />
+      <ul class="component-list">
+        {#each filtered as doc (doc.component)}
+          <li>
+            <button
+              class="component-link"
+              class:active={selected.component === doc.component}
+              onclick={() => (selected = doc)}
+            >
+              {doc.name}
+            </button>
+          </li>
+        {/each}
+      </ul>
+    </spe.StackMenu>
   </aside>
 
   <main class="doc-panel">
+    {#if unknown}
+      <p class="notice" role="status">
+        No component named <code>{unknown}</code> — showing <strong>{selected.name}</strong>.
+      </p>
+    {/if}
     <h1>{selected.name}</h1>
-    <p class="tag"><code>{selected.tag}</code></p>
+    <p class="tag">
+      <spe.Tooltip content={`Import as spe.${selected.component}`}>
+        <code>{selected.tag}</code>
+      </spe.Tooltip>
+    </p>
     <p class="blurb">{selected.blurb}</p>
 
     {#if bases.length}
       <p class="base">
         Renders as
         {#each bases as base (base)}
-          <code>{`<${base}>`}</code>
+          <spe.Tooltip content="Underlying HTML element">
+            <code>{`<${base}>`}</code>
+          </spe.Tooltip>
         {/each}
       </p>
     {/if}
@@ -111,8 +124,8 @@
       <table>
         <thead>
           <tr>
-            <th>Attribute</th>
-            <th>Accepts</th>
+            <th><spe.Tooltip content="Component-specific prop">Attribute</spe.Tooltip></th>
+            <th><spe.Tooltip content="Values or types it accepts">Accepts</spe.Tooltip></th>
           </tr>
         </thead>
         <tbody>
@@ -155,7 +168,7 @@
   .component-list {
     list-style: none;
     padding: 0;
-    margin: 16px 0 0;
+    margin: 8px 0 0;
   }
 
   .component-link {
@@ -197,13 +210,13 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 6px;
-    margin: 0 0 8px;
+    margin: 0 0 4px;
     color: color-mix(in srgb, var(--spe-font-color) 60%, transparent);
     font-size: 14px;
   }
 
   .blurb {
-    margin: 6px 0 0;
+    margin: 3px 0 0;
     max-width: 60ch;
     color: color-mix(in srgb, var(--spe-font-color) 65%, transparent);
     font-size: 15px;
@@ -211,10 +224,20 @@
   }
 
   .empty {
-    margin: 12px 0 0;
+    margin: 6px 0 0;
     color: color-mix(in srgb, var(--spe-font-color) 55%, transparent);
     font-size: 14px;
     font-style: italic;
+  }
+
+  .notice {
+    margin: 0 0 12px;
+    padding: 8px 12px;
+    color: var(--spe-color-red);
+    background: color-mix(in srgb, var(--spe-color-red) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--spe-color-red) 35%, transparent);
+    border-radius: var(--spe-radius-low);
+    font-size: 13px;
   }
 
   pre {
@@ -229,7 +252,7 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 16px;
+    margin-top: 8px;
   }
 
   th,
@@ -245,13 +268,31 @@
     display: inline-block;
     background: var(--spe-bg-tint);
     padding: 2px 8px;
-    border-radius: 4px;
-    margin: 2px 4px 2px 0;
+    border-radius: 0;
+    margin: 1px 2px 1px 0;
     font-size: 13px;
   }
 
   td code.dynamic {
     color: color-mix(in srgb, var(--spe-font-color) 60%, transparent);
     font-style: italic;
+  }
+
+  @media (max-width: 900px) {
+    .docs-layout {
+      flex-direction: column;
+    }
+
+    .sidebar {
+      width: 100%;
+      padding: 12px 16px;
+      border-right: none;
+      border-bottom: 1px solid color-mix(in srgb, var(--spe-font-color) 10%, transparent);
+    }
+
+    .doc-panel {
+      max-width: 100%;
+      padding: 24px 16px;
+    }
   }
 </style>

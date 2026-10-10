@@ -1,6 +1,6 @@
 {
   "name": "simplyengineered",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,9 +21,10 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "svelte": "./dist/index.js"
+      "svelte": "./dist/index.js",
+      "default": "./dist/index.js"
     },
-    "./colors.css": "./dist/colors.css",
+    "./vars.css": "./dist/vars.css",
     "./main.css": "./dist/main.css",
     "./package.json": "./package.json"
   },

@@ -13,8 +13,8 @@
   .spe-pilltab {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
-    padding: 4px;
+    gap: 0;
+    padding: 0;
     background: color-mix(in srgb, var(--spe-mode) 85%, var(--spe-font-color) 15%);
     border-radius: var(--spe-radius-med);
   }

@@ -1,21 +1,11 @@
 <script lang="ts">
   import * as spe from 'simplyengineered';
   import { onMount } from 'svelte';
-  import { page } from '$app/state';
   import { createEditor } from './editor';
   import { destroyPreview, renderPreview } from './preview';
   import { EXAMPLES } from './examples';
+  import { isActive, tabs } from '$lib/docs';
   import type { EditorView } from '@codemirror/view';
-
-  const tabs = [
-    { label: 'Home', href: '/' },
-    { label: 'Docs', href: '/docs' },
-    { label: 'Playground', href: '/playground' }
-  ];
-
-  function isActive(href: string): boolean {
-    return href === '/' ? page.url.pathname === '/' : page.url.pathname.startsWith(href);
-  }
 
   let editorHost: HTMLDivElement;
   let previewFrame: HTMLIFrameElement;
@@ -100,13 +90,25 @@
   <h1>SimplyEngineered</h1>
 
   {#snippet right()}
-    <spe.Pilltab>
-      {#each tabs as tab (tab.href)}
-        <spe.PilltabItem href={tab.href} variant={isActive(tab.href) ? 'active' : undefined}>
-          {tab.label}
-        </spe.PilltabItem>
-      {/each}
-    </spe.Pilltab>
+    <spe.StackMenu threshold="tablet" label="Menu">
+      <spe.Pilltab>
+        {#each tabs as tab (tab.href)}
+          <spe.PilltabItem href={tab.href} variant={isActive(tab.href) ? 'active' : undefined}>
+            {tab.label}
+          </spe.PilltabItem>
+        {/each}
+      </spe.Pilltab>
+      <spe.Tooltip content="Pick a theme color — saved for next time">
+        <spe.ColorSwitcher active="yellow" aria-label="Theme color">
+          <option value="yellow">Yellow</option>
+          <option value="magenta">Magenta</option>
+          <option value="blue">Blue</option>
+          <option value="pink">Pink</option>
+          <option value="green">Green</option>
+          <option value="beige">Beige</option>
+        </spe.ColorSwitcher>
+      </spe.Tooltip>
+    </spe.StackMenu>
   {/snippet}
 </spe.Navbar>
 
@@ -114,16 +116,22 @@
   <header class="bar">
     <div class="bar-left">
       <h2>Playground</h2>
-      <spe.Dropdown bind:value={exampleId} simple>
-        {#each EXAMPLES as item (item.id)}
-          <option value={item.id}>{item.name}</option>
-        {/each}
-      </spe.Dropdown>
+      <spe.Tooltip content="Choose an example to load">
+        <spe.Dropdown bind:value={exampleId} simple>
+          {#each EXAMPLES as item (item.id)}
+            <option value={item.id}>{item.name}</option>
+          {/each}
+        </spe.Dropdown>
+      </spe.Tooltip>
     </div>
 
     <div class="bar-right">
-      <spe.Button variant="simple" onclick={reset}>Reset</spe.Button>
-      <spe.Button variant="tonal" onclick={copy}>{copied ? 'Copied' : 'Copy code'}</spe.Button>
+      <spe.Tooltip content="Restore this example's original code">
+        <spe.Button variant="simple" onclick={reset}>Reset</spe.Button>
+      </spe.Tooltip>
+      <spe.Tooltip content="Copy the editor contents to your clipboard">
+        <spe.Button variant="tonal" onclick={copy}>{copied ? 'Copied' : 'Copy code'}</spe.Button>
+      </spe.Tooltip>
     </div>
   </header>
 
@@ -133,7 +141,9 @@
 
   <div class="panes">
     <section class="pane">
-      <h3>Code</h3>
+      <h3>
+        <spe.Tooltip content="Edit the code — the preview updates automatically">Code</spe.Tooltip>
+      </h3>
       <div class="editor" bind:this={editorHost}></div>
       <p class="pane-note">
         <code>spe.*</code> is auto imported — type <code>spe.</code> for completions.
@@ -141,7 +151,7 @@
     </section>
 
     <section class="pane">
-      <h3>Preview</h3>
+      <h3><spe.Tooltip content="Live preview in an isolated frame">Preview</spe.Tooltip></h3>
       <!-- no src: contentDocument is available as soon as it is in the DOM -->
       <iframe class="preview" title="Component preview" bind:this={previewFrame}></iframe>
     </section>

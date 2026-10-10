@@ -3,7 +3,8 @@
   import type { Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
 
-  type CardVariant = 'simple' | 'accent' | 'no-border' | 'no-bg-tint' | 'dashed-border';
+  const VARIANTS = ['simple', 'accent', 'no-border', 'no-bg-tint', 'dashed-border'] as const;
+  type CardVariant = (typeof VARIANTS)[number];
 
   interface Props extends HTMLAttributes<HTMLDivElement> {
     /** one variant, or several separated by spaces: variant="accent dashed-border" */
@@ -13,13 +14,25 @@
 
   let { variant = '', class: className = '', children, ...rest }: Props = $props();
 
+  // Typo'd variants used to emit a dead class silently; now they are dropped and
+  // reported once each so the mistake is still visible in the console.
+  const warned: Record<string, true> = {};
   let classes = $derived(
     [
       'spe-card',
       ...variant
         .split(/\s+/)
         .filter(Boolean)
-        .map((v) => `spe-card-${v}`),
+        .map((v) => {
+          if ((VARIANTS as readonly string[]).includes(v)) return `spe-card-${v}`;
+          if (!warned[v]) {
+            warned[v] = true;
+            console.warn(
+              `[simplyengineered] Unknown Card variant "${v}". Known variants: ${VARIANTS.join(', ')}.`
+            );
+          }
+          return '';
+        }),
       className
     ]
       .filter(Boolean)

@@ -1,7 +1,7 @@
 /*
  * SimplyEngineered design — main.css
- * SimplyEngineered Design License v1.0 — See LICENSE file
- * Requires: colors.css
+ * MIT License — see the LICENSE file at the repository root.
+ * Requires: vars.css
  */
 
 *,
@@ -15,24 +15,17 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  color-scheme: var(--spe-color-scheme, dark);
+  /* the whole page follows --spe-bg, so there is no white flash on overscroll */
+  background: var(--spe-bg);
 }
 
 body {
-  background: var(--spe-bg);
   color: var(--spe-font-color);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-}
-
-a {
-  color: var(--spe-accent);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
 }
 
 h1,
@@ -41,13 +34,13 @@ h3,
 h4,
 h5,
 h6 {
-  margin: 0 0 0.5em;
+  margin: 0 0 0.25em;
   font-weight: 700;
   line-height: 1.25;
 }
 
 p {
-  margin: 0 0 1em;
+  margin: 0 0 0.5em;
 }
 
 ::selection {

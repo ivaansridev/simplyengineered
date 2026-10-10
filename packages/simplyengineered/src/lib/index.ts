@@ -1,4 +1,4 @@
-import './colors.css';
+import './vars.css';
 import './main.css';
 
 export { default as Button } from './Button.svelte';
@@ -12,5 +12,7 @@ export { default as PilltabItem } from './PilltabItem.svelte';
 export { default as Input } from './Input.svelte';
 export { default as Textarea } from './Textarea.svelte';
 export { default as Dropdown } from './Dropdown.svelte';
+export { default as ColorSwitcher } from './ColorSwitcher.svelte';
 export { default as Toggle } from './Toggle.svelte';
 export { default as Tooltip } from './Tooltip.svelte';
+export { default as StackMenu } from './StackMenu.svelte';

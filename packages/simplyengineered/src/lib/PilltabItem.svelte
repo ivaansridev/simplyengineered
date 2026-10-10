@@ -3,12 +3,18 @@
   import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
   import type { Snippet } from 'svelte';
 
-  type Props = {
+  type Shared = {
     variant?: 'active' | undefined;
-    href?: string;
     children?: Snippet;
-  } & Omit<HTMLButtonAttributes, 'href'> &
-    Omit<HTMLAnchorAttributes, 'href'>;
+  };
+
+  /*
+   * Discriminated on `href`: an anchor only accepts anchor attributes, a button
+   * only button attributes — so `type`/`target`/`disabled` can't land on the
+   * wrong element.
+   */
+  type Props = Shared &
+    (({ href: string } & HTMLAnchorAttributes) | ({ href?: undefined } & HTMLButtonAttributes));
 
   let { variant, href, class: className = '', children, ...rest }: Props = $props();
 
@@ -18,11 +24,12 @@
 </script>
 
 {#if href}
+  <!-- the discriminated union makes each spread sound; cast only to pick the element's own attribute set -->
   <a {href} class={classes} {...rest as HTMLAnchorAttributes}>
     {@render children?.()}
   </a>
 {:else}
-  <button class={classes} {...rest}>
+  <button class={classes} {...rest as HTMLButtonAttributes}>
     {@render children?.()}
   </button>
 {/if}
@@ -32,6 +39,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin: 0;
     padding: 8px 20px;
     font: inherit;
     font-size: 14px;
@@ -43,8 +51,8 @@
     cursor: pointer;
     text-decoration: none;
     transition:
-      background-color 150ms ease,
-      color 150ms ease;
+      background-color var(--spe-dur, 120ms) ease,
+      color var(--spe-dur, 120ms) ease;
   }
 
   .spe-pilltab-item:hover {

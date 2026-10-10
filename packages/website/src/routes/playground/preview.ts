@@ -17,6 +17,12 @@ import * as lib from 'simplyengineered';
  * The result is mounted inside an iframe: the component's own styles (and any
  * stray global rules a component brings with it) then stay out of the editor UI,
  * and `position: fixed` inside a component is scoped to the preview pane.
+ *
+ * This is NOT a security boundary. The frame shares the page's JS realm and the
+ * compiled code runs with the site's own privileges (`new Function`), so the
+ * playground must only ever run code the user typed themselves. Never load
+ * shared, remote or otherwise untrusted snippets into it without a real sandbox
+ * (a cross-origin frame or a Worker).
  */
 const SPECIFIERS: Record<string, string> = {
   simplyengineered: '__lib',
@@ -93,8 +99,22 @@ function prepareDocument(frame: HTMLIFrameElement): { doc: Document; target: HTM
   );
   for (const style of styles) {
     // the editor's own styles are of no use to a preview
-    if (style instanceof HTMLStyleElement && style.textContent?.includes('.cm-')) continue;
-    doc.head.append(style.cloneNode(true));
+    if (style instanceof HTMLStyleElement) {
+      if (style.textContent?.includes('.cm-')) continue;
+      doc.head.append(style.cloneNode(true));
+      continue;
+    }
+
+    // A production build links `/_app/...` stylesheets. The frame is about:blank,
+    // so resolve the href against the app's base to make it absolute — otherwise
+    // the linked CSS never loads and the preview renders unstyled.
+    const clone = style.cloneNode(true) as HTMLLinkElement;
+    try {
+      clone.href = new URL(style.getAttribute('href') ?? '', document.baseURI).href;
+    } catch {
+      /* leave the original href */
+    }
+    doc.head.append(clone);
   }
 
   const target = doc.createElement('div');
@@ -126,10 +146,19 @@ export function destroyPreview(frame?: HTMLIFrameElement): void {
   }
 
   const doc = frame?.contentDocument;
-  if (doc) {
-    doc.getElementById(ROOT_ID)?.remove();
-    doc.querySelectorAll('style[data-playground]').forEach((el) => el.remove());
+  if (!doc) return;
+
+  // Mounted components clean up after themselves on unmount, but one can still
+  // have written inline custom properties on <html> (e.g. ColorSwitcher's
+  // --spe-accent). Clear those too. Everything else is wiped on the next render,
+  // because prepareDocument rewrites the whole document.
+  const root = doc.documentElement;
+  for (const name of root.style) {
+    if (name.startsWith('--spe-')) root.style.removeProperty(name);
   }
+
+  doc.getElementById(ROOT_ID)?.remove();
+  doc.querySelectorAll('style[data-playground]').forEach((el) => el.remove());
 }
 
 export function renderPreview(code: string, frame: HTMLIFrameElement): PreviewResult {

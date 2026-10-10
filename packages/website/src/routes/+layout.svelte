@@ -4,7 +4,11 @@
   // stylesheet only reachable through a component import lands on one route and
   // the others render unstyled. The layout is shared, so importing it here
   // guarantees every page gets it.
-  import 'simplyengineered/colors.css';
+  //
+  // The entry point imports the same two files (so package consumers get them
+  // too); Vite/Rollup dedupe identical module imports, so this is not a second
+  // download.
+  import 'simplyengineered/vars.css';
   import 'simplyengineered/main.css';
 
   let { children } = $props();

@@ -44,10 +44,22 @@
   }
 
   .spe-nav-blur {
+    background: transparent;
+    border-bottom: 1px solid color-mix(in srgb, var(--spe-font-color) 8%, transparent);
+  }
+
+  /* The blur lives on a pseudo-element: putting backdrop-filter on the nav
+     itself would make it a containing block for position:fixed descendants,
+     which would trap the Tooltip and the StackMenu's Modal inside the navbar. */
+  .spe-nav-blur::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
     background: color-mix(in srgb, var(--spe-bg-tint) 70%, transparent);
     backdrop-filter: blur(14px) saturate(140%);
     -webkit-backdrop-filter: blur(14px) saturate(140%);
-    border-bottom: 1px solid color-mix(in srgb, var(--spe-font-color) 8%, transparent);
   }
 
   .spe-nav-left,
